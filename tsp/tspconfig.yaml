@@ -1,0 +1,5 @@
+emit:
+  - "@typespec/openapi3"
+output-dir: "{project-root}/_spec"
+parameters:
+  "openapi3-version": "3.0.0"
