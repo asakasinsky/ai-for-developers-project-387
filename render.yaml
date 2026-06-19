@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: calendar-booking-api
+    env: docker
+    region: oregon
+    plan: free
+    repo: https://github.com/asakasinsky/ai-for-developers-project-386.git
+    branch: main
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: "8000"
+      - key: NODE_VERSION
+        value: "18"
+    autoDeploy: true
