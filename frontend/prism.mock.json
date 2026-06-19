@@ -1,0 +1,259 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Calendar Booking API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/event-types": {
+      "get": {
+        "summary": "Get all event types",
+        "operationId": "listEventTypes",
+        "responses": {
+          "200": {
+            "description": "List of event types",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventType"
+                  }
+                },
+                "example": [
+                  {
+                    "id": "consultation",
+                    "name": "30-min Consultation",
+                    "description": "Quick consultation call to discuss your needs",
+                    "durationMinutes": 30
+                  },
+                  {
+                    "id": "demo",
+                    "name": "Product Demo",
+                    "description": "Full product demonstration with Q&A",
+                    "durationMinutes": 60
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/event-types/{eventTypeId}": {
+      "get": {
+        "summary": "Get event type by ID",
+        "operationId": "getEventType",
+        "parameters": [
+          {
+            "name": "eventTypeId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event type found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EventType" },
+                "example": {
+                  "id": "consultation",
+                  "name": "30-min Consultation",
+                  "description": "Quick consultation call to discuss your needs",
+                  "durationMinutes": 30
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Event type not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/NotFoundError" },
+                "example": {
+                  "code": "NOT_FOUND",
+                  "message": "Event type not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/availability/{eventTypeId}": {
+      "get": {
+        "summary": "Get available slots for an event type (next 14 days)",
+        "operationId": "getAvailableSlots",
+        "parameters": [
+          {
+            "name": "eventTypeId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Available time slots",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/TimeSlot" }
+                },
+                "example": [
+                  {
+                    "startTime": "2026-06-20T09:00:00Z",
+                    "endTime": "2026-06-20T09:30:00Z",
+                    "available": true
+                  },
+                  {
+                    "startTime": "2026-06-20T10:00:00Z",
+                    "endTime": "2026-06-20T10:30:00Z",
+                    "available": true
+                  },
+                  {
+                    "startTime": "2026-06-20T11:00:00Z",
+                    "endTime": "2026-06-20T11:30:00Z",
+                    "available": false
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bookings": {
+      "get": {
+        "summary": "Get all upcoming bookings",
+        "operationId": "listUpcomingBookings",
+        "responses": {
+          "200": {
+            "description": "List of upcoming bookings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Booking" }
+                },
+                "example": [
+                  {
+                    "id": "booking-1",
+                    "eventTypeId": "consultation",
+                    "guestName": "Alice Smith",
+                    "guestEmail": "alice@example.com",
+                    "startTime": "2026-06-22T14:00:00Z",
+                    "endTime": "2026-06-22T14:30:00Z",
+                    "createdAt": "2026-06-19T10:00:00Z"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a booking",
+        "operationId": "createBooking",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["eventTypeId", "guestName", "guestEmail", "startTime"],
+                "properties": {
+                  "eventTypeId": { "type": "string" },
+                  "guestName": { "type": "string" },
+                  "guestEmail": { "type": "string" },
+                  "startTime": { "type": "string", "format": "date-time" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Booking created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Booking" },
+                "example": {
+                  "id": "new-booking-123",
+                  "eventTypeId": "consultation",
+                  "guestName": "John Doe",
+                  "guestEmail": "john@example.com",
+                  "startTime": "2026-06-20T09:00:00Z",
+                  "endTime": "2026-06-20T09:30:00Z",
+                  "createdAt": "2026-06-19T12:00:00Z"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Slot unavailable",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SlotUnavailableError" },
+                "example": {
+                  "code": "SLOT_UNAVAILABLE",
+                  "message": "This time slot is no longer available"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EventType": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "durationMinutes": { "type": "integer" }
+        }
+      },
+      "TimeSlot": {
+        "type": "object",
+        "properties": {
+          "startTime": { "type": "string", "format": "date-time" },
+          "endTime": { "type": "string", "format": "date-time" },
+          "available": { "type": "boolean" }
+        }
+      },
+      "Booking": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "eventTypeId": { "type": "string" },
+          "guestName": { "type": "string" },
+          "guestEmail": { "type": "string" },
+          "startTime": { "type": "string", "format": "date-time" },
+          "endTime": { "type": "string", "format": "date-time" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "NotFoundError": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "string", "enum": ["NOT_FOUND"] },
+          "message": { "type": "string" }
+        }
+      },
+      "SlotUnavailableError": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "string", "enum": ["SLOT_UNAVAILABLE"] },
+          "message": { "type": "string" }
+        }
+      }
+    }
+  }
+}
