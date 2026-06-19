@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "mock": "prism mock prism.mock.json --port 3000",
-    "dev:mock": "npm run mock & npm run dev"
+    "dev:mock": "npm run mock & npm run dev",
+    "release": "release-please release",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.2.0",
@@ -27,7 +29,10 @@
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.61.0",
     "@stoplight/prism-cli": "^5.14.2",
     "@stoplight/prism-core": "^5.8.0",
     "@stoplight/prism-http": "^5.12.0",
@@ -44,6 +49,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
     "postcss": "^8.5.15",
+    "release-please": "^17.9.0",
     "tailwindcss": "^3.4.17",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
