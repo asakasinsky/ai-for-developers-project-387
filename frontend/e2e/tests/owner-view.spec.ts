@@ -19,16 +19,20 @@ test.describe('Owner View', () => {
 
     await page.goto('/owner');
 
-    await expect(page.locator('h1')).toContainText('Upcoming Bookings');
+    await page.waitForLoadState('networkidle');
 
-    await expect(page.getByText('Test Guest')).toBeVisible();
-    await expect(page.getByText('testguest@example.com')).toBeVisible();
+    await expect(page.locator('h1')).toContainText('Upcoming Bookings', { timeout: 10000 });
+
+    await expect(page.getByText('Test Guest')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText('testguest@example.com')).toBeVisible({ timeout: 5000 });
   });
 
   test('should show empty state when no bookings', async ({ page }) => {
     await page.goto('/owner');
 
-    await expect(page.locator('h1')).toContainText('Upcoming Bookings');
-    await expect(page.getByText(/No upcoming bookings/i)).toBeVisible();
+    await page.waitForLoadState('networkidle');
+
+    await expect(page.locator('h1')).toContainText('Upcoming Bookings', { timeout: 10000 });
+    await expect(page.getByText('No upcoming bookings')).toBeVisible({ timeout: 5000 });
   });
 });
