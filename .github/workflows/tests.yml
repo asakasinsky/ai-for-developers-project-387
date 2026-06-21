@@ -36,7 +36,13 @@ jobs:
         run: cd frontend && npx playwright install --with-deps chromium
 
       - name: Start backend server
-        run: cd backend && uvicorn main:app --host 0.0.0.0 --port 3000 &
+        run: |
+          cd backend && uvicorn main:app --host 0.0.0.0 --port 3000 &
+          echo "Waiting for backend to be ready..."
+          for i in {1..30}; do
+            curl -s http://localhost:3000/ > /dev/null && echo "Backend ready" && break
+            sleep 1
+          done
         env:
           PORT: 3000
 

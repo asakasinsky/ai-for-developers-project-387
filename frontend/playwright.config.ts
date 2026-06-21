@@ -20,7 +20,7 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev',
     port: 5173,
-    reuseExistingServer: !!process.env.CI,
+    reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
     env: {
       VITE_API_BASE: 'http://localhost:3000',
