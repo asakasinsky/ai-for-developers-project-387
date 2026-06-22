@@ -28,7 +28,9 @@ jobs:
       - name: Save report to repo
         run: |
           mkdir -p lighthouse-reports
-          cp -r lighthouse-report/* lighthouse-reports/$(date +%Y%m%d-%H%M%S)/
+          REPORT_DIR="lighthouse-reports/$(date +%Y%m%d-%H%M%S)"
+          mkdir -p "$REPORT_DIR"
+          cp -r lighthouse-report/* "$REPORT_DIR/"
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add lighthouse-reports/
