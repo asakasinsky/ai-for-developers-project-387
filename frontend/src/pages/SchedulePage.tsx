@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { api } from '@/api/client'
 import type { TimeSlot } from '@/api/types'
 
@@ -17,6 +16,12 @@ const durationToEventType: Record<string, string> = {
   '30': 'consultation',
   '60': 'demo',
   '90': 'strategy',
+}
+
+const durationToSlotsCount: Record<string, number> = {
+  '30': 1,
+  '60': 2,
+  '90': 3,
 }
 
 const eventTypeNames: Record<string, string> = {
@@ -53,6 +58,9 @@ export function SchedulePage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null)
+  const [hoveredInfo, setHoveredInfo] = useState<{ groupIdx: number; startSlotIdx: number } | null>(null)
+
+  const neededSlots = durationId ? durationToSlotsCount[durationId] : 1
 
   useEffect(() => {
     if (!durationId) return
@@ -84,6 +92,58 @@ export function SchedulePage() {
     return acc
   }, [])
 
+  const isSlotInRange = (groupIdx: number, slotIdx: number): boolean => {
+    if (!hoveredInfo) return false
+    if (hoveredInfo.groupIdx !== groupIdx) return false
+    return slotIdx >= hoveredInfo.startSlotIdx && slotIdx < hoveredInfo.startSlotIdx + neededSlots
+  }
+
+  const getSelectedSlotPosition = (): { groupIdx: number; slotIdx: number } | null => {
+    if (!selectedSlot) return null
+    for (let gi = 0; gi < groupedSlots.length; gi++) {
+      const si = groupedSlots[gi].slots.findIndex(s => s.startTime === selectedSlot.startTime)
+      if (si !== -1) return { groupIdx: gi, slotIdx: si }
+    }
+    return null
+  }
+
+  const isSlotInSelectedRange = (groupIdx: number, slotIdx: number): boolean => {
+    const pos = getSelectedSlotPosition()
+    if (!pos) return false
+    if (pos.groupIdx !== groupIdx) return false
+    return slotIdx >= pos.slotIdx && slotIdx < pos.slotIdx + neededSlots
+  }
+
+  const isSelectedRangeAvailable = (groupIdx: number): boolean => {
+    const pos = getSelectedSlotPosition()
+    if (!pos || pos.groupIdx !== groupIdx) return true
+    const group = groupedSlots[groupIdx]
+    for (let i = pos.slotIdx; i < Math.min(pos.slotIdx + neededSlots, group.slots.length); i++) {
+      if (!group.slots[i].available) return false
+    }
+    return true
+  }
+
+  const isRangeValidForSlot = (groupIdx: number, slotIdx: number): boolean => {
+    const group = groupedSlots[groupIdx]
+    for (let i = slotIdx; i < Math.min(slotIdx + neededSlots, group.slots.length); i++) {
+      if (!group.slots[i].available) return false
+    }
+    return true
+  }
+
+  const getRangeStatus = (groupIdx: number): 'green' | 'red' | null => {
+    if (!hoveredInfo || hoveredInfo.groupIdx !== groupIdx) return null
+
+    const group = groupedSlots[groupIdx]
+    for (let i = hoveredInfo.startSlotIdx; i < Math.min(hoveredInfo.startSlotIdx + neededSlots, group.slots.length); i++) {
+      if (!group.slots[i].available) {
+        return 'red'
+      }
+    }
+    return 'green'
+  }
+
   const handleContinue = () => {
     if (!selectedSlot || !durationId) return
     const eventTypeId = durationToEventType[durationId]
@@ -105,17 +165,21 @@ export function SchedulePage() {
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>{eventTypeNames[durationId || ''] || 'Расписание'}</CardTitle>
-          <p className="text-sm text-muted-foreground">Выберите удобное время</p>
+          <p className="text-sm text-muted-foreground">
+            Наведите на слот чтобы увидеть {neededSlots} следующих{neededSlots > 1 ? ' слота' : ''}
+          </p>
         </CardHeader>
       </Card>
 
-      <div className="flex gap-4 mb-6">
-        <Badge variant="success" className="px-3 py-1">
-          Доступно
-        </Badge>
-        <Badge variant="danger" className="px-3 py-1">
-          Занято
-        </Badge>
+      <div className="flex gap-6 mb-6">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded border-2 border-green-500" />
+          <span className="text-sm">Хватает места</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded border-2 border-red-500" />
+          <span className="text-sm">Не хватает места</span>
+        </div>
       </div>
 
       {groupedSlots.length === 0 ? (
@@ -126,30 +190,42 @@ export function SchedulePage() {
         </Card>
       ) : (
         <div className="space-y-8">
-          {groupedSlots.map((group) => (
+          {groupedSlots.map((group, groupIdx) => (
             <div key={group.date}>
               <h2 className="text-lg font-semibold mb-4">{group.dateDisplay}</h2>
               <div className="grid gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-                {group.slots.map((slot) => {
+                {group.slots.map((slot, slotIdx) => {
                   const isSelected = selectedSlot?.startTime === slot.startTime
                   const isAvailable = slot.available
+                  const isInRange = isSlotInRange(groupIdx, slotIdx)
+                  const isInSelRange = isSlotInSelectedRange(groupIdx, slotIdx)
+                  const rangeStatus = getRangeStatus(groupIdx, slotIdx)
+                  const selRangeStatus = isSelectedRangeAvailable(groupIdx)
+
+                  const canSelect = isAvailable && isRangeValidForSlot(groupIdx, slotIdx)
+                  const showGreen = isInRange && rangeStatus === 'green'
+                  const showRed = (isInRange && rangeStatus === 'red') || (isInSelRange && !selRangeStatus)
 
                   return (
-                    <Button
+                    <div
                       key={slot.startTime}
-                      variant={isAvailable ? (isSelected ? 'default' : 'outline') : 'secondary'}
-                      disabled={!isAvailable}
-                      onClick={() => setSelectedSlot(slot)}
-                      className={`relative ${!isAvailable ? 'opacity-60' : ''}`}
+                      className="relative"
+                      onMouseEnter={() => isAvailable && setHoveredInfo({ groupIdx, startSlotIdx: slotIdx })}
+                      onMouseLeave={() => setHoveredInfo(null)}
                     >
-                      {formatTime(slot.startTime)}
-                      {!isAvailable && (
-                        <Badge
-                          variant="danger"
-                          className="absolute -top-2 -right-2 w-5 h-5 rounded-full p-0 flex items-center justify-center"
-                        />
-                      )}
-                    </Button>
+                      <Button
+                        variant={isSelected || !isAvailable || isInSelRange ? 'default' : 'outline'}
+                        disabled={!canSelect}
+                        onClick={() => { if (canSelect) { setSelectedSlot(slot); setHoveredInfo(null); } }}
+                        title={!canSelect && isAvailable ? `Нужно ${neededSlots * 30} минут подряд` : ''}
+                        className={`w-full transition-all ${isInSelRange ? '!opacity-100' : ''} ${
+                          showGreen ? 'ring-2 ring-green-500 ring-offset-2' :
+                          showRed ? 'ring-2 ring-red-500 ring-offset-2' : ''
+                        }`}
+                      >
+                        {formatTime(slot.startTime)}
+                      </Button>
+                    </div>
                   )
                 })}
               </div>
