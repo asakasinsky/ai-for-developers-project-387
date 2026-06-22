@@ -1,7 +1,7 @@
 .PHONY: start stop docker-start docker-stop build build-docker test-e2e
 
 start:
-	cd backend && uvicorn main:app --port $(or $(PORT),8000)
+	cd backend && uvicorn main:app --port $(PORT)
 
 stop:
 	pkill -f "uvicorn" || true
