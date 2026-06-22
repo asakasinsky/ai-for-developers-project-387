@@ -1,12 +1,14 @@
 import { test, expect } from '@playwright/test';
 
+const API_BASE = process.env.VITE_API_BASE || 'http://localhost:3000';
+
 test.describe('Owner View', () => {
   test('should display bookings on owner page', async ({ page, request }) => {
     const bookingDate = new Date();
     bookingDate.setDate(bookingDate.getDate() + 3);
     bookingDate.setHours(11, 0, 0, 0);
 
-    const response = await request.post('http://localhost:8000/bookings', {
+    const response = await request.post(`${API_BASE}/bookings`, {
       data: {
         eventTypeId: 'demo',
         guestName: 'Test Guest',

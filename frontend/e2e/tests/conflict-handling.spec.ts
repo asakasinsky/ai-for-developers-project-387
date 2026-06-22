@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+const API_BASE = process.env.VITE_API_BASE || 'http://localhost:3000';
+
 test.describe('Slot Conflict Handling', () => {
   test('should show error when booking already taken slot', async ({ page, request }) => {
     const tomorrow = new Date();
@@ -8,7 +10,7 @@ test.describe('Slot Conflict Handling', () => {
 
     const slotTime = tomorrow.toISOString();
 
-    const response = await request.post('http://localhost:8000/bookings', {
+    const response = await request.post(`${API_BASE}/bookings`, {
       data: {
         eventTypeId: 'consultation',
         guestName: 'First Guest',
@@ -41,7 +43,7 @@ test.describe('Slot Conflict Handling', () => {
 
     const slotTime = tomorrow.toISOString();
 
-    await request.post('http://localhost:8000/bookings', {
+    await request.post(`${API_BASE}/bookings`, {
       data: {
         eventTypeId: 'consultation',
         guestName: 'First Booker',
@@ -50,7 +52,7 @@ test.describe('Slot Conflict Handling', () => {
       },
     });
 
-    const conflictResponse = await request.post('http://localhost:8000/bookings', {
+    const conflictResponse = await request.post(`${API_BASE}/bookings`, {
       data: {
         eventTypeId: 'consultation',
         guestName: 'Second Booker',
