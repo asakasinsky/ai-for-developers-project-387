@@ -16,8 +16,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
-        "https://ai-for-developers-project-386-5uwg.onrender.com",
-        "https://ai-for-developers-project-387.onrender.com",
+        "https://ai-for-developers-project-387-fq8e.onrender.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
