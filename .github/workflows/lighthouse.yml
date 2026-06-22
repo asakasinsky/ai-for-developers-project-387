@@ -1,0 +1,22 @@
+name: Lighthouse CI
+
+on:
+  schedule:
+    - cron: '0 23 * * *'  # 02:00 MSK (UTC+3)
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install -g @lhci/cli
+      - run: lhci collect --url=https://ai-for-developers-project-387-fq8e.onrender.com
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: .lighthouseci/
+          retention-days: 7
