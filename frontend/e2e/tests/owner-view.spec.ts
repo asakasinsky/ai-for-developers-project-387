@@ -23,7 +23,7 @@ test.describe('Owner View', () => {
 
     await page.waitForLoadState('networkidle');
 
-    await expect(page.locator('h1')).toContainText('Upcoming Bookings', { timeout: 10000 });
+    await expect(page.locator('h1')).toContainText('Предстоящие записи', { timeout: 10000 });
 
     await expect(page.getByText('Test Guest')).toBeVisible({ timeout: 5000 });
     await expect(page.getByText('testguest@example.com')).toBeVisible({ timeout: 5000 });
@@ -34,9 +34,9 @@ test.describe('Owner View', () => {
 
     await page.waitForLoadState('networkidle');
 
-    await expect(page.locator('h1')).toContainText('Upcoming Bookings', { timeout: 10000 });
+    await expect(page.locator('h1')).toContainText('Предстоящие записи', { timeout: 10000 });
     // Note: This test may fail if previous tests created bookings
     // The backend uses in-memory storage shared across tests in the same run
-    await expect(page.getByText('No upcoming bookings')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText('Нет предстоящих записей')).toBeVisible({ timeout: 5000 });
   });
 });
