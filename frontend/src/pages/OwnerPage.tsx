@@ -5,7 +5,7 @@ import { api } from '@/api/client'
 import type { Booking } from '@/api/types'
 
 function formatDateTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleString('en-US', {
+  return new Date(dateStr).toLocaleString('ru-RU', {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
@@ -22,11 +22,11 @@ export function OwnerPage() {
   useEffect(() => {
     api.listUpcomingBookings()
       .then(setBookings)
-      .catch(() => setError('Failed to load bookings'))
+      .catch(() => setError('Не удалось загрузить записи'))
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) return <div className="p-8 text-center">Loading...</div>
+  if (loading) return <div className="p-8 text-center">Загрузка...</div>
   if (error) return <div className="p-8 text-center text-destructive">{error}</div>
 
   return (
@@ -34,8 +34,8 @@ export function OwnerPage() {
       <div className="flex items-center gap-3 mb-8">
         <Calendar className="w-8 h-8" />
         <div>
-          <h1 className="text-3xl font-bold">Upcoming Bookings</h1>
-          <p className="text-muted-foreground">All scheduled meetings</p>
+          <h1 className="text-3xl font-bold">Предстоящие записи</h1>
+          <p className="text-muted-foreground">Все запланированные встречи</p>
         </div>
       </div>
 
@@ -43,7 +43,7 @@ export function OwnerPage() {
         <Card>
           <CardContent className="py-12 text-center">
             <Calendar className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-            <p className="text-muted-foreground">No upcoming bookings</p>
+            <p className="text-muted-foreground">Нет предстоящих записей</p>
           </CardContent>
         </Card>
       ) : (
@@ -55,13 +55,13 @@ export function OwnerPage() {
                   <div>
                     <CardTitle>{booking.eventTypeId}</CardTitle>
                     <CardDescription>
-                      Booked on {new Date(booking.createdAt).toLocaleDateString()}
+                      Создана {new Date(booking.createdAt).toLocaleDateString('ru-RU')}
                     </CardDescription>
                   </div>
                   <div className="text-right">
                     <p className="font-medium">{formatDateTime(booking.startTime)}</p>
                     <p className="text-sm text-muted-foreground">
-                      to {formatDateTime(booking.endTime)}
+                      — {formatDateTime(booking.endTime)}
                     </p>
                   </div>
                 </div>
@@ -69,11 +69,11 @@ export function OwnerPage() {
               <CardContent>
                 <div className="grid gap-2 md:grid-cols-2">
                   <div>
-                    <p className="text-sm font-medium">Guest</p>
+                    <p className="text-sm font-medium">Гость</p>
                     <p className="text-sm text-muted-foreground">{booking.guestName}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium">Email</p>
+                    <p className="text-sm font-medium">Почта</p>
                     <p className="text-sm text-muted-foreground">{booking.guestEmail}</p>
                   </div>
                 </div>
