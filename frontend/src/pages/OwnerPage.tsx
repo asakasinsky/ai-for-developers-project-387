@@ -73,7 +73,7 @@ export function OwnerPage() {
                     <p className="text-sm text-muted-foreground">{booking.guestName}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium">Почта</p>
+                    <p className="text-sm font-medium">Email</p>
                     <p className="text-sm text-muted-foreground">{booking.guestEmail}</p>
                   </div>
                 </div>
