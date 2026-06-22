@@ -138,7 +138,9 @@ export function SchedulePage() {
     if (!hoveredInfo || hoveredInfo.groupIdx !== groupIdx) return null
 
     const group = groupedSlots[groupIdx]
-    for (let i = hoveredInfo.startSlotIdx; i < Math.min(hoveredInfo.startSlotIdx + neededSlots, group.slots.length); i++) {
+    // Not enough slots remaining in the day
+    if (hoveredInfo.startSlotIdx + neededSlots > group.slots.length) return 'red'
+    for (let i = hoveredInfo.startSlotIdx; i < hoveredInfo.startSlotIdx + neededSlots; i++) {
       if (!group.slots[i].available) {
         return 'red'
       }
