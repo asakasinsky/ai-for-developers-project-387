@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 import os
 
@@ -29,17 +28,6 @@ frontend_dist = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist"
 
 if os.path.exists(frontend_dist):
     app.mount("/assets", StaticFiles(directory=os.path.join(frontend_dist, "assets")), name="static")
-
-    @app.get("/")
-    def root():
-        return FileResponse(os.path.join(frontend_dist, "index.html"))
-
-    @app.get("/{path:path}")
-    async def serve_spa(path: str):
-        for prefix in ["event-types", "availability", "bookings"]:
-            if path.startswith(prefix):
-                raise HTTPException(status_code=404)
-        return FileResponse(os.path.join(frontend_dist, "index.html"))
 
 # --- Models ---
 
@@ -68,14 +56,6 @@ class CreateBookingRequest(BaseModel):
     guestName: str
     guestEmail: str
     startTime: datetime
-
-class NotFoundError(BaseModel):
-    code: str = "NOT_FOUND"
-    message: str
-
-class SlotUnavailableError(BaseModel):
-    code: str = "SLOT_UNAVAILABLE"
-    message: str
 
 # --- In-Memory Storage ---
 
@@ -197,3 +177,20 @@ def list_upcoming_bookings():
     upcoming = [b for b in bookings_db if b.startTime > now]
     upcoming.sort(key=lambda b: b.startTime)
     return upcoming
+
+# --- SPA Fallback (registered last to not interfere with API) ---
+if os.path.exists(frontend_dist):
+    app.add_api_route(
+        path="/{path:path}",
+        endpoint=lambda path: FileResponse(os.path.join(frontend_dist, "index.html")),
+        methods=["GET"],
+        include_in_schema=False,
+    )
+
+    @app.get("/")
+    def root():
+        return FileResponse(os.path.join(frontend_dist, "index.html"))
+else:
+    @app.get("/")
+    def root():
+        return {"status": "ok", "service": "Calendar Booking API"}
