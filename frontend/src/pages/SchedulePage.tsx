@@ -209,11 +209,18 @@ export function SchedulePage() {
                   const canSelect = isAvailable && isRangeValidForSlot(groupIdx, slotIdx)
                   const showGreen = isInRange && rangeStatus === 'green'
                   const showRed = (isInRange && rangeStatus === 'red') || (isInSelRange && !selRangeStatus)
+                  const isEndOfDayBlocked = isAvailable && !canSelect
+                  const title = !isAvailable
+                    ? 'Это время уже занято'
+                    : isEndOfDayBlocked
+                      ? `Нужно ${neededSlots * 30} минут подряд (не хватает времени в конце дня)`
+                      : ''
 
                   return (
                     <div
                       key={slot.startTime}
                       className="relative"
+                      title={title}
                       onMouseEnter={() => isAvailable && setHoveredInfo({ groupIdx, startSlotIdx: slotIdx })}
                       onMouseLeave={() => setHoveredInfo(null)}
                     >
@@ -221,7 +228,6 @@ export function SchedulePage() {
                         variant={isSelected || !isAvailable || isInSelRange ? 'default' : 'outline'}
                         disabled={!canSelect}
                         onClick={() => { if (canSelect) { setSelectedSlot(slot); setHoveredInfo(null); } }}
-                        title={!canSelect && isAvailable ? `Нужно ${neededSlots * 30} минут подряд` : ''}
                         className={`w-full transition-all ${isInSelRange ? '!opacity-100' : ''} ${
                           showGreen ? 'ring-2 ring-green-500 ring-offset-2' :
                           showRed ? 'ring-2 ring-red-500 ring-offset-2' : ''
