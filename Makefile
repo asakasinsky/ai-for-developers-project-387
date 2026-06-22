@@ -1,9 +1,15 @@
-.PHONY: start stop build build-docker test-e2e
+.PHONY: start stop docker-start docker-stop build build-docker test-e2e
 
 start:
-	docker run -d -p 8000:8000 --name calendar-booking --rm calendar-booking:latest
+	cd backend && uvicorn main:app --port 8000
 
 stop:
+	pkill -f "uvicorn" || true
+
+docker-start:
+	docker run -d -p 8000:8000 --name calendar-booking --rm calendar-booking:latest
+
+docker-stop:
 	docker stop calendar-booking || true
 
 build:
