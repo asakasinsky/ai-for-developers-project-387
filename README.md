@@ -2,7 +2,7 @@
 
 Система бронирования встреч: владелец календаря создаёт типы событий, гости бронируют слоты без регистрации.
 
-**Production:** https://ai-for-developers-project-386-5uwg.onrender.com
+**Production:** https://ai-for-developers-project-387.onrender.com
 
 ### Deploy
 

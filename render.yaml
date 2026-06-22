@@ -4,7 +4,7 @@ services:
     env: docker
     region: oregon
     plan: free
-    repo: https://github.com/asakasinsky/ai-for-developers-project-386.git
+    repo: https://github.com/asakasinsky/ai-for-developers-project-387.git
     branch: main
     dockerfilePath: ./Dockerfile
     envVars:
