@@ -4,3 +4,4 @@ __pycache__/
 booking.db
 _spec/
 .DS_Store
+.playwright-mcp/
