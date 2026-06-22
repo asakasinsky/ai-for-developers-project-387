@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
-import { EventTypesPage } from '@/pages/EventTypesPage'
-import { AvailabilityPage } from '@/pages/AvailabilityPage'
+import { LandingPage } from '@/pages/LandingPage'
+import { DurationPage } from '@/pages/DurationPage'
+import { SchedulePage } from '@/pages/SchedulePage'
 import { BookingConfirmPage } from '@/pages/BookingConfirmPage'
 import { OwnerPage } from '@/pages/OwnerPage'
 
@@ -14,20 +15,20 @@ function Layout({ children }: { children: React.ReactNode }) {
         <div className="container mx-auto px-4">
           <nav className="flex items-center justify-between h-16">
             <Link to="/" className="font-semibold text-lg">
-              Calendar Booking
+              Календарь записей
             </Link>
             <div className="flex gap-4">
               <Link
                 to="/"
                 className={`text-sm ${location.pathname === '/' ? 'text-primary font-medium' : 'text-muted-foreground'}`}
               >
-                Book as Guest
+                Главная
               </Link>
               <Link
                 to="/owner"
                 className={`text-sm ${isOwner ? 'text-primary font-medium' : 'text-muted-foreground'}`}
               >
-                Owner View
+                Панель владельца
               </Link>
             </div>
           </nav>
@@ -43,8 +44,9 @@ function App() {
     <BrowserRouter>
       <Layout>
         <Routes>
-          <Route path="/" element={<EventTypesPage />} />
-          <Route path="/book/:eventTypeId" element={<AvailabilityPage />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/book" element={<DurationPage />} />
+          <Route path="/book/:durationId/schedule" element={<SchedulePage />} />
           <Route path="/book/:eventTypeId/confirm" element={<BookingConfirmPage />} />
           <Route path="/owner" element={<OwnerPage />} />
         </Routes>
