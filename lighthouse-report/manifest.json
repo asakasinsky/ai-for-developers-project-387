@@ -1,0 +1,38 @@
+[
+  {
+    "url": "https://ai-for-developers-project-387-fq8e.onrender.com/",
+    "isRepresentativeRun": false,
+    "htmlPath": "/home/runner/work/ai-for-developers-project-387/ai-for-developers-project-387/lighthouse-report/ai_for_developers_project_387_fq8e_onrender_com--2026_07_02_00_09_57.report.html",
+    "jsonPath": "/home/runner/work/ai-for-developers-project-387/ai-for-developers-project-387/lighthouse-report/ai_for_developers_project_387_fq8e_onrender_com--2026_07_02_00_09_57.report.json",
+    "summary": {
+      "performance": 0.69,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 0.82
+    }
+  },
+  {
+    "url": "https://ai-for-developers-project-387-fq8e.onrender.com/",
+    "isRepresentativeRun": false,
+    "htmlPath": "/home/runner/work/ai-for-developers-project-387/ai-for-developers-project-387/lighthouse-report/ai_for_developers_project_387_fq8e_onrender_com--2026_07_02_00_10_24.report.html",
+    "jsonPath": "/home/runner/work/ai-for-developers-project-387/ai-for-developers-project-387/lighthouse-report/ai_for_developers_project_387_fq8e_onrender_com--2026_07_02_00_10_24.report.json",
+    "summary": {
+      "performance": 1,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 0.82
+    }
+  },
+  {
+    "url": "https://ai-for-developers-project-387-fq8e.onrender.com/",
+    "isRepresentativeRun": true,
+    "htmlPath": "/home/runner/work/ai-for-developers-project-387/ai-for-developers-project-387/lighthouse-report/ai_for_developers_project_387_fq8e_onrender_com--2026_07_02_00_10_12.report.html",
+    "jsonPath": "/home/runner/work/ai-for-developers-project-387/ai-for-developers-project-387/lighthouse-report/ai_for_developers_project_387_fq8e_onrender_com--2026_07_02_00_10_12.report.json",
+    "summary": {
+      "performance": 1,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 0.82
+    }
+  }
+]
